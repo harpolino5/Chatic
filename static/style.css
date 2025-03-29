@@ -1,0 +1,57 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    min-height: 100vh;
+    background: linear-gradient(45deg, rgb(241, 44, 244), white);
+    display: flex;
+    flex-direction: column;
+    font-family: monospace;
+}
+header{
+    background-color: rgb(78, 78, 225);
+    color: white;
+    padding: 0.5rem;
+    text-align: center;
+}
+main{
+    flex-grow: 1;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.3rem;
+    justify-content: flex-end;
+}
+.message{
+    color: white;
+    background-color: rgb(137, 43, 199);
+    border-radius: 0.3rem;
+    width: fit-content;
+    padding: 0.5rem;
+}
+.message:nth-child(3){
+    align-self: flex-end;
+}
+
+.form{
+    display: flex;
+    border: 2px solid rgb(236, 94, 236);
+}
+.form input{
+    flex-grow: 1;
+    padding: 0.5rem;
+    font-size: 1.2 rem;
+    border: none;
+}
+
+.form button{
+    background-color: rgb(140, 74, 226);
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+}
