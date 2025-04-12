@@ -1,6 +1,9 @@
 require("dotenv").config()
 let db=require("./db")//приєднали файл с базою даниз
 let http= require("http")
+let path=require("path")
+let fs= require("fs")//express(basa danih)
+let { Server } = require("socket.io")
 
 // console.log(process.env.HOST)
 
@@ -12,9 +15,6 @@ let http= require("http")
 //     }
 // })
 
-let path=require("path")
-let fs= require("fs")//express(basa danih)
-
 let pathToIndex=path.join(__dirname, "static", "index.html")
 let index = fs.readFileSync(pathToIndex, "utf-8")
 
@@ -25,7 +25,7 @@ let pathToScript=path.join(__dirname, "static", "script.js")
 let script = fs.readFileSync(pathToScript, "utf-8")
 
 
-http.createServer((req, res)=>{
+let ser = http.createServer((req, res)=>{
     switch(req.url){
         case "/":
             res.writeHead(200, {"content-type": "text/html"})
@@ -44,3 +44,17 @@ http.createServer((req, res)=>{
             res.end("<h1>404 not found</h1>")
     }
 }).listen(3000, ()=> console.log("server is on!"))
+
+let io = new Server(ser)
+
+let messages=[]
+
+io.on("connection", function(s){
+    console.log(s.id)
+    s.on("message", (data)=>{
+        console.log(data)
+        messages.push(data)
+        io.emit("update", JSON.stringify(messages))
+    })
+})
+
