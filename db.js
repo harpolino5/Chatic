@@ -9,4 +9,46 @@ let db = mysql.createConnection({
     database: process.env.DB_NAME
 })
 
-module.exports=db
+let asyncDB= db.promise()
+
+async function getUsers() {
+    try{
+        let [rows, fields] = await asyncDB.query("select * from user")
+        return rows
+    }
+    catch(err){
+        throw err.message
+    }
+}
+
+async function getMessages() {
+    try{
+        let [rows, fields] = await asyncDB.query("select m.id, m.contex, m.author_id, u.login from message as m join user as u on m.author_id=u.id")
+        return rows
+    }
+    catch(err){
+        throw err.message
+    }
+}
+
+async function addMessage(content, userID) {
+    try{
+        let [rows, fields] = await asyncDB.query("insert into message(contex, author_id) values(?, ?)", [content, userID])
+        return rows
+    }
+    catch(err){
+        throw err.message
+    }
+}
+
+// getUsers().then((result)=>{
+//     console.log(result);
+// }).catch((err)=>{
+//     console.log(err)
+// })
+
+module.exports={
+    getUsers,
+    getMessages,
+    addMessage
+};

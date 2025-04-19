@@ -15,8 +15,8 @@ socket.on("update", function (data) {
     main.innerHTML = JSON.parse(data)
         .map(
             (message) => {
-                message = JSON.parse(message)
-                return `<div class ="message>${message.name}: ${message.text}</div>`
+                
+                return `<div class="message">${message.name}: ${message.text}</div>`
             }
         )
         .join("")
