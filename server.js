@@ -4,6 +4,7 @@ let http = require("http")
 let path = require("path")
 let fs = require("fs")//express(basa danih)
 let { Server } = require("socket.io")
+let bcrypt = require("bcrypt")
 
 // console.log(process.env.HOST)
 
@@ -30,6 +31,9 @@ let register = fs.readFileSync(pathToRegister, "utf-8")
 let pathToAuth = path.join(__dirname, "static", "auth.js")
 let auth = fs.readFileSync(pathToAuth, "utf-8")
 
+let pathToLogin = path.join(__dirname, "static", "login.html")
+let loginPage = fs.readFileSync(pathToLogin, "utf-8")
+
 
 let ser = http.createServer((req, res) => {
     switch (req.url) {
@@ -40,6 +44,10 @@ let ser = http.createServer((req, res) => {
         case "/register":
             res.writeHead(200, { "content-type": "text/html" })
             res.end(register)
+            break;
+        case "/login":
+            res.writeHead(200, { "content-type": "text/html" })
+            res.end(loginPage)
             break;
         case "/auth.js":
             res.writeHead(200, { "content-type": "text/js" })
@@ -52,6 +60,24 @@ let ser = http.createServer((req, res) => {
         case "/script.js":
             res.writeHead(200, { "content-type": "text/js" })
             res.end(script)
+            break;
+        case "/api/register":
+            let data = ""
+            req.on("data", (chunk) => data += chunk)
+            req.on("end", async () => {
+                data = JSON.parse(data)
+                console.log(data)
+                let hash = await bcrypt.hash(data.password, 10)
+                console.log(hash)
+                console.log(await bcrypt.compare(data.password, hash))
+                if (await db.checkExists(data.login)) {
+                    res.end("User exist")
+                    return
+                }
+                await db.addUser(data.login, hash).catch(err => console.log(err))
+                res.writeHead(302, { "location": "/login" })
+                res.end(JSON.stringify({ status: "ok" }))
+            });
             break;
         default:
             res.writeHead(404, { "content-type": "text/html" })
@@ -70,9 +96,9 @@ io.on("connection", async function (s) {
         // console.log(data)
         // messages.push(data) додавало в масив
         // io.emit("update", JSON.stringify(messages))
-        data=JSON.parse(data)
+        data = JSON.parse(data)
         await db.addMessage(data.text, 2)
-        let message= await db.getMessages()
+        let message = await db.getMessages()
         message = message.map(m => ({ name: m.login, text: m.contex }))
         io.emit("update", JSON.stringify(message))
 

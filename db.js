@@ -41,6 +41,26 @@ async function addMessage(content, userID) {
     }
 }
 
+async function checkExists(login) {
+    try{
+        let [rows, fields] = await asyncDB.query("select * from user where login = ?", [login])
+        return rows.length>0
+    }
+    catch(err){
+        throw err.message
+    }
+}
+
+async function addUser(login, password) {
+    try{
+        let [rows, fields] = await asyncDB.query("insert into user(login, password) values(?, ?)", [login, password])
+        return rows
+    }
+    catch(err){
+        throw err.message
+    }
+}
+
 // getUsers().then((result)=>{
 //     console.log(result);
 // }).catch((err)=>{
@@ -50,5 +70,7 @@ async function addMessage(content, userID) {
 module.exports={
     getUsers,
     getMessages,
-    addMessage
+    addMessage,
+    checkExists,
+    addUser
 };
