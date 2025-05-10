@@ -55,11 +55,11 @@ main{
     font-size: 1.2rem;
     padding: 0.5rem 1rem;
 }
-main.register{
+main.register, main.login{
     justify-content: center;
     align-items: center;
 }
-.register form{
+.register form, .login form{
     display: flex;
     flex-direction: column;
     background-color: blueviolet;

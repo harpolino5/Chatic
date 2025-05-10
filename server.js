@@ -5,7 +5,8 @@ let path = require("path")
 let fs = require("fs")//express(basa danih)
 let { Server } = require("socket.io")
 let bcrypt = require("bcrypt")
-
+const { json } = require("stream/consumers")
+let jwt = require("jsonwebtoken")
 // console.log(process.env.HOST)
 
 // db.query("SHOW TABLES", function(err,result){
@@ -74,9 +75,26 @@ let ser = http.createServer((req, res) => {
                     res.end("User exist")
                     return
                 }
-                await db.addUser(data.login, hash).catch(err => console.log(err))
-                res.writeHead(302, { "location": "/login" })
-                res.end(JSON.stringify({ status: "ok" }))
+                await db.addUser(data.login, hash)
+                res.end(JSON.stringify({link: '/login'}))
+            });
+            break;
+        case "/api/login":
+            let data1 = ""
+            req.on("data", (chunk) => data1 += chunk)
+            req.on("end", async () => {
+                let {login, password}=JSON.parse(data1)
+                let info = await db.getUser(login)
+                if(info.length==0){
+                    res.end(JSON.stringify({status:"your datas isn't right"}))
+                    return
+                }
+                if(await bcrypt.compare(password,info[0].password)){
+                    let token = jwt.sign({login, id: info[0].id}, "Nikita", {expiresIn: "1h"})
+                    res.end(JSON.stringify({status: "ok", token}))
+                }else{
+                    res.end(JSON.stringify({status:"your datas isn't right"}))
+                }
             });
             break;
         default:

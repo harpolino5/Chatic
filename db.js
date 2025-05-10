@@ -61,6 +61,17 @@ async function addUser(login, password) {
     }
 }
 
+async function getUser(login) {
+    try{
+        let [rows, fields] = await asyncDB.query("select * from user where login = ?", [login])
+        return rows
+    }
+    catch(err){
+        throw err.message
+    }
+}
+
+
 // getUsers().then((result)=>{
 //     console.log(result);
 // }).catch((err)=>{
@@ -72,5 +83,6 @@ module.exports={
     getMessages,
     addMessage,
     checkExists,
-    addUser
+    addUser,
+    getUser
 };
