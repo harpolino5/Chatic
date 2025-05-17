@@ -7,6 +7,7 @@ let { Server } = require("socket.io")
 let bcrypt = require("bcrypt")
 const { json } = require("stream/consumers")
 let jwt = require("jsonwebtoken")
+const { isUndefined } = require("util")
 // console.log(process.env.HOST)
 
 // db.query("SHOW TABLES", function(err,result){
@@ -39,6 +40,7 @@ let loginPage = fs.readFileSync(pathToLogin, "utf-8")
 let ser = http.createServer((req, res) => {
     switch (req.url) {
         case "/":
+            if(!guarded(req,res)) return
             res.writeHead(200, { "content-type": "text/html" })
             res.end(index)
             break;
@@ -91,7 +93,7 @@ let ser = http.createServer((req, res) => {
                 }
                 if(await bcrypt.compare(password,info[0].password)){
                     let token = jwt.sign({login, id: info[0].id}, "Nikita", {expiresIn: "1h"})
-                    res.end(JSON.stringify({status: "ok", token}))
+                    res.end(JSON.stringify({status: "ok", token, login: info[0].login, id: info[0].id}))
                 }else{
                     res.end(JSON.stringify({status:"your datas isn't right"}))
                 }
@@ -115,13 +117,31 @@ io.on("connection", async function (s) {
         // messages.push(data) додавало в масив
         // io.emit("update", JSON.stringify(messages))
         data = JSON.parse(data)
-        await db.addMessage(data.text, 2)
+        await db.addMessage(data.text, data.name)
         let message = await db.getMessages()
         message = message.map(m => ({ name: m.login, text: m.contex }))
         io.emit("update", JSON.stringify(message))
 
     })
 })
+
+function guarded(req,res){
+    if(req.headers.cookie == undefined){
+        res.writeHead(302, {"location": "/register"})
+        res.end()
+        return
+    }
+    let cookies = req.headers.cookie.split("; ")
+    let token = cookies.find(el=>el.startsWith("token")).split("=")[1]
+    let decoded = jwt.decode(token, "Nikita")
+    if(!decoded){
+        res.writeHead(302, {"location": "/register"})
+        res.end()
+        return
+    }else{
+        return decoded
+    }
+}
 
 // db.getUsers().then(res=>console.log(res)).catch(err=>console.log(err))
 

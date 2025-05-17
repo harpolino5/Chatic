@@ -6,6 +6,7 @@
 
 body{
     min-height: 100vh;
+    max-height: 100vh;
     background: linear-gradient(45deg, rgb(241, 44, 244), white);
     display: flex;
     flex-direction: column;
@@ -44,7 +45,7 @@ main{
 .form input{
     flex-grow: 1;
     padding: 0.5rem;
-    font-size: 1.2 rem;
+    font-size: 1 rem;
     border: none;
 }
 
@@ -71,12 +72,12 @@ main.register, main.login{
     text-align: center;
 }
 
-label,button{
+label{
     margin-top: 1rem;
 }
 
 form input{
-    padding: 0.3rem 1rem;
+    /* padding: 0.3rem 1rem; */
     border-radius: 0.5rem;
     border: none;
 }

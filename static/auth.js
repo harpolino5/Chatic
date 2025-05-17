@@ -38,7 +38,9 @@ loginForm?.addEventListener("submit", (e) => {
         body: JSON.stringify({ login, password })
     }).then(res=>res.json()).then(res=>{
         if(res.status=="ok"){
-            document.cookie = "token="+ res.token
+            document.cookie = `token = ${res.token}`
+            document.cookie = `login = ${res.login}`
+            document.cookie = `id = ${res.id}`
             window.location = "/"
         }
     })
