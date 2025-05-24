@@ -25,3 +25,12 @@ socket.on("update", function (data) {
         )
         .join("")
 })
+
+function logout(){
+    document.cookie = "token="
+    window.location.assign("/login")
+}
+function singin(){
+    document.cookie = "token="
+    window.location.assign("/login")
+}
